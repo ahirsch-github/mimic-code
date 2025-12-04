@@ -111,8 +111,8 @@ find "$MIMIC_DIR" -type f -name '*.csv???' | sort | while IFS= read -r FILE; do
       (*) continue;
     esac
     echo "Loading $FILE .. \c"
-    OUTPUT=$(duckdb "$OUTFILE" 2>&1 <<-EOSQL
-		COPY $TABLE_NAME FROM '$FILE' (HEADER, DELIM ',', QUOTE '"', ESCAPE '"');
+    try duckdb "$OUTFILE" <<-EOSQL
+		COPY $TABLE_NAME FROM '$FILE' (HEADER, AUTO_DETECT FALSE, ignore_errors true);
 EOSQL
     )
     # If the table is missing in the DB, we emit a warning and continue.
